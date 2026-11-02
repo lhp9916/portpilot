@@ -77,6 +77,15 @@ sudo apt install libgtk-3-dev libayatana-appindicator3-dev \
 
 仓库包含 `.github/workflows/build.yml`，可在 GitHub Actions 上构建 Windows、macOS 和 Linux 产物，无需在本机安装 Visual Studio。
 
+发布新版本时，确保 `Cargo.toml` 版本与标签一致，然后推送版本标签：
+
+```bash
+git tag v0.1.0
+git push origin v0.1.0
+```
+
+标签构建成功后会由 GitHub Actions 自动创建对应的 GitHub Release，并上传三平台压缩包和 SHA-256 校验文件。
+
 ## 测试
 
 ```powershell
