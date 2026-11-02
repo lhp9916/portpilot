@@ -1,0 +1,1948 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PortPilot UI Concept</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --font-ui: "Noto Sans SC", system-ui, "Segoe UI", sans-serif;
+      --font-mono: "Cascadia Code", "Cascadia Mono", Consolas, monospace;
+      --bg: #070b10;
+      --bg-glow: rgba(42, 210, 194, .10);
+      --shell: #0b1119;
+      --rail: #0d141d;
+      --panel: #101923;
+      --panel-raised: #14202c;
+      --panel-soft: #0d151f;
+      --border: #1e2c3a;
+      --border-strong: #2a3b4e;
+      --text: #edf4fa;
+      --text-soft: #c3d0dc;
+      --muted: #8295a8;
+      --faint: #5c7084;
+      --accent: #35d6c1;
+      --accent-soft: rgba(53, 214, 193, .12);
+      --accent-strong: #63ead6;
+      --blue: #65a8ff;
+      --blue-soft: rgba(101, 168, 255, .12);
+      --violet: #b7a1ff;
+      --violet-soft: rgba(183, 161, 255, .12);
+      --green: #48d597;
+      --green-soft: rgba(72, 213, 151, .12);
+      --amber: #f2b75f;
+      --amber-soft: rgba(242, 183, 95, .12);
+      --red: #ff7474;
+      --red-soft: rgba(255, 116, 116, .12);
+      --shadow: 0 32px 80px rgba(0, 0, 0, .5), 0 0 0 1px rgba(255, 255, 255, .02);
+      --chart-grid: rgba(130, 149, 168, .12);
+      --hover: rgba(255, 255, 255, .035);
+    }
+
+    html[data-theme="light"] {
+      color-scheme: light;
+      --bg: #e9eef3;
+      --bg-glow: rgba(12, 159, 142, .10);
+      --shell: #f7f9fb;
+      --rail: #edf2f6;
+      --panel: #ffffff;
+      --panel-raised: #f5f8fa;
+      --panel-soft: #f8fafc;
+      --border: #dde5ed;
+      --border-strong: #cbd6e1;
+      --text: #14202e;
+      --text-soft: #34465a;
+      --muted: #66798c;
+      --faint: #8b9aab;
+      --accent: #0d9f8c;
+      --accent-soft: rgba(13, 159, 140, .10);
+      --accent-strong: #087f70;
+      --blue: #2d7fe8;
+      --blue-soft: rgba(45, 127, 232, .09);
+      --violet: #765cd2;
+      --violet-soft: rgba(118, 92, 210, .09);
+      --green: #159a64;
+      --green-soft: rgba(21, 154, 100, .09);
+      --amber: #b7760d;
+      --amber-soft: rgba(183, 118, 13, .10);
+      --red: #d94747;
+      --red-soft: rgba(217, 71, 71, .09);
+      --shadow: 0 30px 70px rgba(37, 55, 74, .18), 0 0 0 1px rgba(20, 32, 46, .03);
+      --chart-grid: rgba(102, 121, 140, .16);
+      --hover: rgba(20, 32, 46, .035);
+    }
+
+    * { box-sizing: border-box; }
+    html, body { width: 100%; height: 100%; }
+    body {
+      margin: 0;
+      overflow: hidden;
+      font-family: var(--font-ui);
+      color: var(--text);
+      background:
+        radial-gradient(900px 560px at 10% 0%, var(--bg-glow), transparent 65%),
+        radial-gradient(760px 500px at 100% 100%, rgba(101, 168, 255, .07), transparent 62%),
+        var(--bg);
+      display: grid;
+      place-items: center;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    button, input { font: inherit; }
+    button { color: inherit; }
+    svg { display: block; }
+
+    .app-shell {
+      width: min(1440px, calc(100vw - 36px));
+      height: min(900px, calc(100vh - 32px));
+      min-height: 640px;
+      display: grid;
+      grid-template-columns: 76px minmax(0, 1fr);
+      overflow: hidden;
+      background: var(--shell);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      box-shadow: var(--shadow);
+    }
+
+    .rail {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      padding: 18px 11px 14px;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.025), transparent 26%),
+        var(--rail);
+      border-right: 1px solid var(--border);
+    }
+
+    .rail::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: radial-gradient(90px 150px at 50% 0%, var(--accent-soft), transparent 80%);
+    }
+
+    .brand-mark {
+      position: relative;
+      width: 42px;
+      height: 42px;
+      display: grid;
+      place-items: center;
+      color: #06201d;
+      background: linear-gradient(145deg, var(--accent-strong), var(--accent));
+      border-radius: 13px;
+      box-shadow: 0 8px 24px rgba(53, 214, 193, .2);
+      margin-bottom: 16px;
+      z-index: 1;
+    }
+
+    .brand-mark svg { width: 24px; height: 24px; }
+
+    .rail-nav {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      z-index: 1;
+    }
+
+    .rail-btn {
+      position: relative;
+      width: 100%;
+      height: 48px;
+      display: grid;
+      place-items: center;
+      border: 0;
+      border-radius: 12px;
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+      transition: color .16s ease, background .16s ease;
+    }
+
+    .rail-btn svg { width: 20px; height: 20px; }
+    .rail-btn:hover { color: var(--text); background: var(--hover); }
+    .rail-btn.active { color: var(--accent); background: var(--accent-soft); }
+    .rail-btn.active::before {
+      content: "";
+      position: absolute;
+      left: -11px;
+      width: 3px;
+      height: 22px;
+      border-radius: 0 3px 3px 0;
+      background: var(--accent);
+    }
+
+    .rail-spacer { flex: 1; }
+    .rail-status {
+      width: 9px;
+      height: 9px;
+      border-radius: 999px;
+      background: var(--green);
+      box-shadow: 0 0 0 5px var(--green-soft);
+      margin: 10px 0 13px;
+    }
+
+    .rail-version {
+      font: 8.5px/1 var(--font-mono);
+      color: var(--faint);
+      letter-spacing: .06em;
+    }
+
+    .workspace {
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .topbar {
+      height: 82px;
+      flex: 0 0 82px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      padding: 0 26px 0 30px;
+      border-bottom: 1px solid var(--border);
+      background: linear-gradient(180deg, rgba(255,255,255,.018), transparent);
+    }
+
+    .page-title { min-width: 0; }
+    .eyebrow {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      margin-bottom: 3px;
+      font: 600 9px/1 var(--font-mono);
+      letter-spacing: .18em;
+      color: var(--accent);
+      text-transform: uppercase;
+    }
+    .eyebrow::before {
+      content: "";
+      width: 16px;
+      height: 1px;
+      background: var(--accent);
+    }
+    .page-title h1 {
+      margin: 0;
+      font-size: 23px;
+      line-height: 1.2;
+      letter-spacing: -.02em;
+      font-weight: 650;
+    }
+    .page-title p {
+      margin: 3px 0 0;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .top-actions {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      flex: 0 0 auto;
+    }
+
+    .btn {
+      height: 36px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      padding: 0 13px;
+      border-radius: 9px;
+      border: 1px solid var(--border-strong);
+      background: transparent;
+      color: var(--text-soft);
+      font-size: 12px;
+      font-weight: 550;
+      cursor: pointer;
+      transition: background .16s ease, border-color .16s ease, transform .16s ease;
+    }
+    .btn:hover { background: var(--hover); border-color: var(--faint); }
+    .btn:active { transform: translateY(1px); }
+    .btn svg { width: 14px; height: 14px; }
+    .btn.primary {
+      border-color: transparent;
+      color: #04201c;
+      background: linear-gradient(145deg, var(--accent-strong), var(--accent));
+      box-shadow: 0 8px 22px rgba(53, 214, 193, .16);
+    }
+    .btn.primary:hover { filter: brightness(1.04); }
+
+    .icon-btn {
+      width: 36px;
+      height: 36px;
+      display: grid;
+      place-items: center;
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+      transition: .16s ease;
+    }
+    .icon-btn:hover { color: var(--text); background: var(--hover); }
+    .icon-btn svg { width: 16px; height: 16px; }
+
+    .lang-switch {
+      height: 36px;
+      display: flex;
+      align-items: center;
+      padding: 3px;
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      background: var(--panel-soft);
+    }
+    .lang-switch button {
+      min-width: 30px;
+      height: 28px;
+      border: 0;
+      border-radius: 6px;
+      background: transparent;
+      color: var(--faint);
+      font: 600 9px/1 var(--font-mono);
+      cursor: pointer;
+    }
+    .lang-switch button.active {
+      color: var(--text);
+      background: var(--panel-raised);
+      box-shadow: inset 0 0 0 1px var(--border);
+    }
+
+    .content {
+      min-height: 0;
+      flex: 1;
+      display: grid;
+      grid-template-columns: 390px minmax(0, 1fr);
+      gap: 16px;
+      padding: 16px 18px 18px;
+    }
+
+    .rules-column,
+    .detail-panel {
+      min-height: 0;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: var(--panel);
+    }
+
+    .rules-column {
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .rules-head {
+      padding: 17px 17px 12px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .section-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .section-title {
+      font-size: 13px;
+      font-weight: 650;
+      letter-spacing: .01em;
+    }
+    .section-count {
+      color: var(--faint);
+      font: 10px/1 var(--font-mono);
+    }
+
+    .search {
+      position: relative;
+      margin-top: 13px;
+    }
+    .search svg {
+      position: absolute;
+      left: 11px;
+      top: 50%;
+      width: 13px;
+      height: 13px;
+      transform: translateY(-50%);
+      color: var(--faint);
+      pointer-events: none;
+    }
+    .search input {
+      width: 100%;
+      height: 35px;
+      padding: 0 12px 0 33px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      outline: 0;
+      color: var(--text);
+      background: var(--panel-soft);
+      font-size: 12px;
+    }
+    .search input::placeholder { color: var(--faint); }
+    .search input:focus { border-color: var(--accent); }
+
+    .filters {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 11px;
+    }
+    .filter {
+      height: 27px;
+      padding: 0 10px;
+      border: 1px solid transparent;
+      border-radius: 7px;
+      color: var(--muted);
+      background: transparent;
+      font-size: 11px;
+      cursor: pointer;
+    }
+    .filter:hover { color: var(--text); background: var(--hover); }
+    .filter.active {
+      color: var(--accent);
+      background: var(--accent-soft);
+      border-color: rgba(53, 214, 193, .18);
+    }
+
+    .rule-list {
+      min-height: 0;
+      overflow-y: auto;
+      padding: 9px;
+      scrollbar-width: thin;
+      scrollbar-color: var(--border-strong) transparent;
+    }
+    .rule-list::-webkit-scrollbar { width: 5px; }
+    .rule-list::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 9px; }
+
+    .rule-card {
+      position: relative;
+      padding: 12px 12px 11px;
+      border: 1px solid transparent;
+      border-radius: 11px;
+      cursor: pointer;
+      transition: background .16s ease, border-color .16s ease;
+    }
+    .rule-card + .rule-card { margin-top: 4px; }
+    .rule-card:hover { background: var(--hover); }
+    .rule-card.selected {
+      border-color: var(--border-strong);
+      background:
+        linear-gradient(90deg, var(--accent-soft), transparent 72%),
+        var(--panel-raised);
+    }
+    .rule-card.selected::before {
+      content: "";
+      position: absolute;
+      left: -1px;
+      top: 15px;
+      bottom: 15px;
+      width: 2px;
+      border-radius: 0 4px 4px 0;
+      background: var(--accent);
+    }
+
+    .rule-top {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .protocol {
+      flex: 0 0 auto;
+      padding: 3px 6px;
+      border-radius: 4px;
+      color: var(--blue);
+      background: var(--blue-soft);
+      font: 700 8px/1 var(--font-mono);
+      letter-spacing: .08em;
+    }
+    .protocol.udp { color: var(--violet); background: var(--violet-soft); }
+    .rule-name {
+      flex: 1;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-size: 12.5px;
+      font-weight: 600;
+    }
+    .status-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      flex: 0 0 auto;
+      color: var(--muted);
+      font-size: 10px;
+    }
+    .status-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 99px;
+      background: var(--faint);
+    }
+    .status-dot.running { background: var(--green); box-shadow: 0 0 0 3px var(--green-soft); }
+    .status-dot.stopped { background: var(--faint); }
+    .status-dot.error { background: var(--red); box-shadow: 0 0 0 3px var(--red-soft); }
+    .quick-toggle {
+      width: 24px;
+      height: 24px;
+      flex: 0 0 auto;
+      display: grid;
+      place-items: center;
+      border: 1px solid transparent;
+      border-radius: 6px;
+      color: var(--muted);
+      background: transparent;
+      cursor: pointer;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateX(2px);
+      transition: opacity .16s ease, color .16s ease, background .16s ease, transform .16s ease;
+    }
+    .quick-toggle svg { width: 12px; height: 12px; }
+    .rule-card:hover .quick-toggle,
+    .rule-card.selected .quick-toggle {
+      opacity: 1;
+      pointer-events: auto;
+      transform: none;
+    }
+    .rule-card.selected .quick-toggle {
+      color: var(--muted);
+      background: var(--panel-soft);
+      border-color: var(--border);
+    }
+    .quick-toggle:hover {
+      color: var(--text);
+      background: var(--hover);
+      border-color: var(--border);
+    }
+
+    .route {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      margin-top: 8px;
+      padding-left: 1px;
+      color: var(--muted);
+      font: 10.5px/1.2 var(--font-mono);
+    }
+    .route .local { color: var(--text-soft); }
+    .route-arrow {
+      width: 18px;
+      height: 8px;
+      flex: 0 0 auto;
+      color: var(--faint);
+    }
+    .route .target {
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .rule-meta {
+      display: flex;
+      align-items: center;
+      gap: 13px;
+      margin-top: 8px;
+      color: var(--faint);
+      font-size: 9.5px;
+    }
+    .meta-item { display: flex; align-items: center; gap: 4px; }
+    .meta-item svg { width: 11px; height: 11px; }
+    .meta-item strong {
+      color: var(--muted);
+      font: 500 9.5px/1 var(--font-mono);
+    }
+    .rule-meta-right {
+      position: relative;
+      width: 46px;
+      height: 18px;
+      flex: 0 0 46px;
+      margin-left: auto;
+    }
+    .spark {
+      position: absolute;
+      right: 0;
+      top: 2px;
+      width: 44px;
+      height: 14px;
+      opacity: .8;
+      transition: opacity .14s ease;
+    }
+    .spark path { fill: none; stroke: var(--accent); stroke-width: 1.3; }
+    .rule-actions {
+      position: absolute;
+      right: -2px;
+      top: -2px;
+      display: flex;
+      gap: 2px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .14s ease;
+    }
+    .rule-card:hover .spark,
+    .rule-card.selected .spark { opacity: 0; }
+    .rule-card:hover .rule-actions,
+    .rule-card.selected .rule-actions {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .rule-card.selected .tiny-btn { color: var(--muted); }
+    .tiny-btn {
+      width: 20px;
+      height: 20px;
+      display: grid;
+      place-items: center;
+      border: 1px solid transparent;
+      border-radius: 5px;
+      color: var(--faint);
+      background: transparent;
+      cursor: pointer;
+    }
+    .tiny-btn svg { width: 11px; height: 11px; }
+    .tiny-btn:hover {
+      color: var(--text);
+      background: var(--hover);
+      border-color: var(--border);
+    }
+
+    .detail-panel {
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      background: var(--panel-soft);
+    }
+
+    .detail-head {
+      flex: 0 0 auto;
+      padding: 18px 20px 16px;
+      border-bottom: 1px solid var(--border);
+      background: var(--panel);
+    }
+    .detail-title-row {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 18px;
+    }
+    .detail-kicker {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      margin-bottom: 5px;
+    }
+    .detail-kicker .protocol { padding: 3px 7px; }
+    .detail-kicker .status-label { color: var(--green); }
+    .detail-title {
+      margin: 0;
+      font-size: 20px;
+      line-height: 1.2;
+      letter-spacing: -.015em;
+      font-weight: 650;
+    }
+    .detail-sub {
+      margin: 5px 0 0;
+      color: var(--muted);
+      font-size: 11px;
+    }
+    .detail-actions {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      padding-top: 2px;
+    }
+    .btn.danger {
+      color: var(--red);
+      border-color: color-mix(in srgb, var(--red) 24%, transparent);
+      background: var(--red-soft);
+    }
+    .btn.danger:hover {
+      border-color: color-mix(in srgb, var(--red) 40%, transparent);
+      background: color-mix(in srgb, var(--red-soft) 78%, var(--panel));
+    }
+    .menu-wrap { position: relative; }
+    .menu {
+      position: absolute;
+      top: calc(100% + 6px);
+      right: 0;
+      z-index: 5;
+      min-width: 150px;
+      display: none;
+      padding: 5px;
+      border: 1px solid var(--border-strong);
+      border-radius: 9px;
+      background: var(--panel-raised);
+      box-shadow: 0 16px 34px rgba(0, 0, 0, .26);
+    }
+    .menu.open { display: block; }
+    .menu button {
+      width: 100%;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 0 8px;
+      border: 0;
+      border-radius: 6px;
+      color: var(--text-soft);
+      background: transparent;
+      font-size: 10px;
+      text-align: left;
+      cursor: pointer;
+    }
+    .menu button:hover { color: var(--text); background: var(--hover); }
+    .menu button.danger { color: var(--red); }
+    .menu svg { width: 13px; height: 13px; }
+
+    .detail-scroll {
+      min-height: 0;
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px 17px 17px;
+      scrollbar-width: thin;
+      scrollbar-color: var(--border-strong) transparent;
+    }
+    .detail-scroll::-webkit-scrollbar { width: 5px; }
+    .detail-scroll::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 9px; }
+
+    .route-card {
+      position: relative;
+      padding: 11px 15px 12px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      background:
+        radial-gradient(280px 110px at 50% 50%, var(--accent-soft), transparent 76%),
+        var(--panel);
+    }
+    .route-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      opacity: .16;
+      pointer-events: none;
+      background-image: radial-gradient(var(--faint) .55px, transparent .55px);
+      background-size: 12px 12px;
+      mask-image: linear-gradient(90deg, transparent, #000 30%, #000 70%, transparent);
+    }
+    .route-card-label {
+      position: relative;
+      margin-bottom: 8px;
+      color: var(--faint);
+      font: 600 8.5px/1 var(--font-mono);
+      letter-spacing: .14em;
+      text-transform: uppercase;
+    }
+    .flow {
+      position: relative;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 84px minmax(0, 1fr);
+      align-items: center;
+      gap: 8px;
+    }
+    .node {
+      min-width: 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .node.target { flex-direction: row-reverse; text-align: right; }
+    .node-icon {
+      width: 32px;
+      height: 32px;
+      flex: 0 0 auto;
+      display: grid;
+      place-items: center;
+      border-radius: 9px;
+      color: var(--accent);
+      background: var(--accent-soft);
+      border: 1px solid rgba(53, 214, 193, .16);
+    }
+    .node.target .node-icon {
+      color: var(--blue);
+      background: var(--blue-soft);
+      border-color: rgba(101, 168, 255, .16);
+    }
+    .node-icon svg { width: 15px; height: 15px; }
+    .node-copy { min-width: 0; }
+    .node-label {
+      color: var(--faint);
+      font-size: 8px;
+      margin-bottom: 3px;
+    }
+    .node-address {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      color: var(--text);
+      font: 600 12px/1.2 var(--font-mono);
+    }
+    .node-address small { color: var(--muted); font-size: 10px; font-weight: 400; }
+    .flow-line {
+      position: relative;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border-strong) 18%, var(--border-strong) 82%, transparent);
+    }
+    .flow-line::after {
+      content: "";
+      position: absolute;
+      top: -2px;
+      left: 22%;
+      width: 5px;
+      height: 5px;
+      border-radius: 99px;
+      background: var(--accent);
+      box-shadow: 0 0 10px var(--accent);
+      animation: travel 2.4s ease-in-out infinite;
+    }
+    @keyframes travel {
+      0%, 100% { left: 18%; opacity: .2; }
+      45% { opacity: 1; }
+      50% { left: 76%; }
+      95% { opacity: .2; }
+    }
+    .flow-line .pause {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      width: 28px;
+      height: 20px;
+      display: grid;
+      place-items: center;
+      color: var(--accent);
+      background: transparent;
+    }
+    .flow-line .pause svg { width: 11px; height: 11px; }
+
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 9px;
+      margin-top: 12px;
+    }
+    .stat-card {
+      padding: 11px 12px 10px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: var(--panel);
+    }
+    .stat-card-label {
+      color: var(--faint);
+      font-size: 9.5px;
+      margin-bottom: 6px;
+    }
+    .stat-value {
+      color: var(--text);
+      font: 600 16px/1 var(--font-mono);
+      letter-spacing: -.02em;
+    }
+    .stat-value small { color: var(--muted); font-size: 9px; font-weight: 400; }
+    .stat-foot {
+      margin-top: 6px;
+      color: var(--faint);
+      font-size: 9px;
+    }
+    .stat-foot .up { color: var(--accent); }
+    .stat-foot .down { color: var(--blue); }
+
+    .chart-card {
+      margin-top: 12px;
+      padding: 14px 15px 11px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: var(--panel);
+    }
+    .chart-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+    }
+    .chart-title { font-size: 12px; font-weight: 600; }
+    .chart-sub { margin-top: 3px; color: var(--faint); font-size: 9.5px; }
+    .chart-now {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      margin-left: 8px;
+      color: var(--faint);
+      font: 8.5px/1 var(--font-mono);
+    }
+    .chart-now strong { color: var(--accent); font-weight: 600; }
+    .legend {
+      display: flex;
+      gap: 12px;
+      color: var(--muted);
+      font-size: 9.5px;
+    }
+    .legend span { display: inline-flex; align-items: center; gap: 5px; }
+    .legend i { width: 7px; height: 2px; border-radius: 3px; display: inline-block; }
+    .legend .up { background: var(--accent); }
+    .legend .down { background: var(--blue); }
+    .chart-body {
+      display: flex;
+      gap: 7px;
+      margin-top: 7px;
+    }
+    .y-axis {
+      position: relative;
+      width: 39px;
+      height: 158px;
+      flex: 0 0 39px;
+      color: var(--faint);
+      font: 7.5px/1 var(--font-mono);
+    }
+    .y-axis span {
+      position: absolute;
+      right: 0;
+      transform: translateY(-50%);
+      white-space: nowrap;
+    }
+    .y-axis span:nth-child(1) { top: 24px; }
+    .y-axis span:nth-child(2) { top: 62px; }
+    .y-axis span:nth-child(3) { top: 100px; }
+    .y-axis span:nth-child(4) { top: 138px; }
+    .chart-wrap { position: relative; height: 158px; flex: 1; }
+    .chart-wrap svg { width: 100%; height: 100%; overflow: visible; }
+    .chart-grid-line { stroke: var(--chart-grid); stroke-width: 1; stroke-dasharray: 2 5; }
+    .chart-axis {
+      fill: var(--faint);
+      font: 7.5px var(--font-mono);
+    }
+    .area-up { fill: url(#areaUp); }
+    .line-up { fill: none; stroke: var(--accent); stroke-width: 1.8; }
+    .line-down { fill: none; stroke: var(--blue); stroke-width: 1.5; opacity: .9; }
+    .chart-pulse {
+      fill: var(--accent);
+      stroke: var(--panel);
+      stroke-width: 3;
+    }
+
+    .bottom-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      gap: 12px;
+      margin-top: 12px;
+    }
+    .mini-panel {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: var(--panel);
+      overflow: hidden;
+    }
+    .mini-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 11px 13px 9px;
+      border-bottom: 1px solid var(--border);
+    }
+    .mini-title { font-size: 10px; font-weight: 600; }
+    .link-btn {
+      border: 0;
+      padding: 0;
+      color: var(--accent);
+      background: transparent;
+      font-size: 9.5px;
+      cursor: pointer;
+    }
+    .log-list { padding: 5px 13px 7px; }
+    .log-row {
+      display: grid;
+      grid-template-columns: 44px 42px minmax(0, 1fr);
+      gap: 7px;
+      align-items: baseline;
+      padding: 5px 0;
+      border-bottom: 1px solid color-mix(in srgb, var(--border) 55%, transparent);
+      font-size: 9.5px;
+    }
+    .log-row:last-child { border-bottom: 0; }
+    .log-time { color: var(--faint); font: 8.5px/1.3 var(--font-mono); }
+    .log-level {
+      font: 700 8px/1 var(--font-mono);
+      color: var(--green);
+      letter-spacing: .04em;
+    }
+    .log-level.warn { color: var(--amber); }
+    .log-level.error { color: var(--red); }
+    .log-msg {
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      color: var(--muted);
+    }
+    .log-msg code { color: var(--text-soft); font: 8.5px var(--font-mono); }
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 20;
+      display: none;
+      place-items: center;
+      background: rgba(3, 7, 12, .64);
+      backdrop-filter: blur(5px);
+    }
+    .modal-backdrop.open { display: grid; }
+    .modal {
+      width: 510px;
+      overflow: hidden;
+      border: 1px solid var(--border-strong);
+      border-radius: 16px;
+      background: var(--panel);
+      box-shadow: 0 32px 80px rgba(0, 0, 0, .4);
+    }
+    .modal-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      padding: 18px 20px 14px;
+      border-bottom: 1px solid var(--border);
+    }
+    .modal-head h2 {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 650;
+    }
+    .modal-head p { margin: 4px 0 0; color: var(--muted); font-size: 11px; }
+    .modal-body { padding: 17px 20px 18px; }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .field { display: flex; flex-direction: column; gap: 6px; }
+    .field.wide { grid-column: 1 / -1; }
+    .field label { color: var(--muted); font-size: 10px; }
+    .field input, .field select {
+      width: 100%;
+      height: 36px;
+      padding: 0 11px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      outline: 0;
+      color: var(--text);
+      background: var(--panel-soft);
+      font-size: 12px;
+    }
+    .field input:focus, .field select:focus { border-color: var(--accent); }
+    .field.has-error input { border-color: var(--red); }
+    .field.has-error input:focus { border-color: var(--red); }
+    .field-error {
+      display: none;
+      margin-top: -1px;
+      color: var(--red);
+      font-size: 9px;
+      line-height: 1.4;
+    }
+    .field.has-error .field-error { display: block; }
+    .protocol-select { display: flex; gap: 5px; }
+    .protocol-select button {
+      flex: 1;
+      height: 36px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--muted);
+      background: var(--panel-soft);
+      font: 600 10px var(--font-mono);
+      cursor: pointer;
+    }
+    .protocol-select button.active {
+      color: var(--accent);
+      border-color: rgba(53, 214, 193, .25);
+      background: var(--accent-soft);
+    }
+    .toggle-row {
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 11px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text-soft);
+      background: var(--panel-soft);
+      font-size: 10px;
+    }
+    .toggle {
+      position: relative;
+      width: 34px;
+      height: 20px;
+      border: 0;
+      border-radius: 99px;
+      background: var(--border-strong);
+      cursor: pointer;
+      transition: background .16s ease;
+    }
+    .toggle::after {
+      content: "";
+      position: absolute;
+      left: 3px;
+      top: 3px;
+      width: 14px;
+      height: 14px;
+      border-radius: 99px;
+      background: var(--text-soft);
+      transition: left .16s ease, background .16s ease;
+    }
+    .toggle.on { background: var(--accent-soft); box-shadow: inset 0 0 0 1px rgba(53, 214, 193, .25); }
+    .toggle.on::after { left: 17px; background: var(--accent); }
+    .modal-note {
+      display: flex;
+      gap: 7px;
+      margin-top: 13px;
+      padding: 9px 10px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--faint);
+      background: var(--panel-soft);
+      font-size: 9.5px;
+      line-height: 1.5;
+    }
+    .modal-note svg { width: 13px; height: 13px; flex: 0 0 auto; color: var(--amber); margin-top: 1px; }
+    .modal-foot {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      padding: 13px 20px;
+      border-top: 1px solid var(--border);
+      background: var(--panel-soft);
+    }
+
+    @media (max-width: 1120px) {
+      .app-shell { grid-template-columns: 64px minmax(0, 1fr); }
+      .rail { padding-inline: 8px; }
+      .rail-btn.active::before { left: -8px; }
+      .content { grid-template-columns: 340px minmax(0, 1fr); padding: 12px; gap: 12px; }
+      .topbar { padding: 0 18px; }
+      .bottom-grid { grid-template-columns: 1fr; }
+      .stat-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+<body>
+  <svg width="0" height="0" style="position:absolute">
+    <symbol id="i-logo" viewBox="0 0 24 24">
+      <path d="M5 7.2h7.5M5 12h10M5 16.8h5.5" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+      <path d="M15 7.2h4v4.8h-4zM15 12v4.8h4" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="i-route" viewBox="0 0 24 24">
+      <circle cx="6" cy="6" r="2.2" fill="none" stroke="currentColor" stroke-width="1.6"/>
+      <circle cx="18" cy="18" r="2.2" fill="none" stroke="currentColor" stroke-width="1.6"/>
+      <path d="M8.2 6H14a4 4 0 0 1 0 8H9a4 4 0 0 0 0 8h.3" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="i-log" viewBox="0 0 24 24">
+      <path d="M5 6h14M5 12h14M5 18h8" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+      <circle cx="18" cy="18" r="1.5" fill="currentColor"/>
+    </symbol>
+    <symbol id="i-settings" viewBox="0 0 24 24">
+      <path d="M12 8.2a3.8 3.8 0 1 0 0 7.6 3.8 3.8 0 0 0 0-7.6Z" fill="none" stroke="currentColor" stroke-width="1.5"/>
+      <path d="M19.3 13.4a7.8 7.8 0 0 0 0-2.8l2-1.6-2-3.4-2.4 1a8 8 0 0 0-2.4-1.4L14.1 2h-4.2l-.4 3.2a8 8 0 0 0-2.4 1.4l-2.4-1-2 3.4 2 1.6a7.8 7.8 0 0 0 0 2.8l-2 1.6 2 3.4 2.4-1a8 8 0 0 0 2.4 1.4l.4 3.2h4.2l.4-3.2a8 8 0 0 0 2.4-1.4l2.4 1 2-3.4-2-1.6Z" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="i-search" viewBox="0 0 24 24">
+      <circle cx="10.5" cy="10.5" r="6" fill="none" stroke="currentColor" stroke-width="1.8"/>
+      <path d="m15 15 4 4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24">
+      <path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="i-play" viewBox="0 0 24 24">
+      <path d="m9 6 9 6-9 6V6Z" fill="currentColor"/>
+    </symbol>
+    <symbol id="i-stop" viewBox="0 0 24 24">
+      <rect x="6" y="6" width="12" height="12" rx="1.5" fill="currentColor"/>
+    </symbol>
+    <symbol id="i-restart" viewBox="0 0 24 24">
+      <path d="M19 8a7.5 7.5 0 1 0 1 6" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+      <path d="M19 3v5h-5" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="i-moon" viewBox="0 0 24 24">
+      <path d="M20 15.1A8 8 0 0 1 8.9 4a8 8 0 1 0 11.1 11.1Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="i-sun" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="3.7" fill="none" stroke="currentColor" stroke-width="1.6"/>
+      <path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6 7 7M17 17l1.4 1.4M18.4 5.6 17 7M7 17l-1.4 1.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="i-arrow" viewBox="0 0 28 10">
+      <path d="M1 5h23M20 1l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="i-desktop" viewBox="0 0 24 24">
+      <rect x="3" y="4" width="18" height="13" rx="2" fill="none" stroke="currentColor" stroke-width="1.6"/>
+      <path d="M8 21h8M12 17v4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="i-server" viewBox="0 0 24 24">
+      <rect x="4" y="4" width="16" height="6" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.6"/>
+      <rect x="4" y="14" width="16" height="6" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.6"/>
+      <circle cx="7.5" cy="7" r=".8" fill="currentColor"/>
+      <circle cx="7.5" cy="17" r=".8" fill="currentColor"/>
+    </symbol>
+    <symbol id="i-activity" viewBox="0 0 24 24">
+      <path d="M3 12h4l2.2-6 4.1 12 2.5-8 2 2H21" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="i-shield" viewBox="0 0 24 24">
+      <path d="M12 3 5 6v5c0 4.5 2.8 8.2 7 10 4.2-1.8 7-5.5 7-10V6l-7-3Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+      <path d="m9 12 2 2 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="i-copy" viewBox="0 0 24 24">
+      <rect x="8" y="8" width="11" height="11" rx="2" fill="none" stroke="currentColor" stroke-width="1.6"/>
+      <path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2" fill="none" stroke="currentColor" stroke-width="1.6"/>
+    </symbol>
+    <symbol id="i-info" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.6"/>
+      <path d="M12 11v5M12 8.2v.2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="i-more" viewBox="0 0 24 24">
+      <circle cx="5" cy="12" r="1.4" fill="currentColor"/>
+      <circle cx="12" cy="12" r="1.4" fill="currentColor"/>
+      <circle cx="19" cy="12" r="1.4" fill="currentColor"/>
+    </symbol>
+    <symbol id="i-x" viewBox="0 0 24 24">
+      <path d="m7 7 10 10M17 7 7 17" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+    </symbol>
+  </svg>
+
+  <div class="app-shell">
+    <aside class="rail">
+      <div class="brand-mark" title="PortPilot">
+        <svg><use href="#i-logo"/></svg>
+      </div>
+      <nav class="rail-nav">
+        <button class="rail-btn active" title="端口转发"><svg><use href="#i-route"/></svg></button>
+        <button class="rail-btn" title="日志"><svg><use href="#i-log"/></svg></button>
+        <button class="rail-btn" title="设置"><svg><use href="#i-settings"/></svg></button>
+      </nav>
+      <div class="rail-spacer"></div>
+      <div class="rail-status" title="转发引擎正常"></div>
+      <div class="rail-version">v0.1</div>
+    </aside>
+
+    <main class="workspace">
+      <header class="topbar">
+        <div class="page-title">
+          <div class="eyebrow" data-i18n="eyebrow">LOCAL PORT CONTROL</div>
+          <h1 data-i18n="title">端口转发</h1>
+          <p data-i18n="subtitle">管理本机监听端口与目标服务之间的连接</p>
+        </div>
+        <div class="top-actions">
+          <button class="btn" id="startAllBtn">
+            <svg><use href="#i-play"/></svg>
+            <span data-i18n="startAll">全部启动</span>
+          </button>
+          <button class="btn primary" id="newRuleBtn">
+            <svg><use href="#i-plus"/></svg>
+            <span data-i18n="newRule">新建转发</span>
+          </button>
+          <div class="lang-switch" aria-label="Language">
+            <button class="active" data-lang="zh">中</button>
+            <button data-lang="en">EN</button>
+          </div>
+          <button class="icon-btn" id="themeBtn" title="切换主题">
+            <svg id="themeIcon"><use href="#i-sun"/></svg>
+          </button>
+        </div>
+      </header>
+
+      <section class="content">
+        <aside class="rules-column">
+          <div class="rules-head">
+            <div class="section-row">
+              <div class="section-title" data-i18n="rulesTitle">转发规则</div>
+              <div class="section-count" id="ruleCount">5 RULES</div>
+            </div>
+            <label class="search">
+              <svg><use href="#i-search"/></svg>
+              <input id="searchInput" type="search" placeholder="搜索名称、端口或目标…" data-i18n-placeholder="searchPlaceholder">
+            </label>
+            <div class="filters">
+              <button class="filter active" data-filter="all" data-i18n="filterAll">全部 5</button>
+              <button class="filter" data-filter="running" data-i18n="filterRunning">运行中 3</button>
+              <button class="filter" data-filter="stopped" data-i18n="filterStopped">已停止 2</button>
+            </div>
+          </div>
+          <div class="rule-list" id="ruleList">
+            <article class="rule-card selected" data-rule="web" data-status="running" data-search="web 开发 8080 dev.local 3000 tcp">
+              <div class="rule-top">
+                <span class="protocol">TCP</span>
+                <span class="rule-name">Web 开发</span>
+                <span class="status-label"><i class="status-dot running"></i><span data-i18n="running">运行中</span></span>
+                <button class="quick-toggle" data-action="toggle" title="停止规则" data-i18n-title="stopRule"><svg><use href="#i-stop"/></svg></button>
+              </div>
+              <div class="route">
+                <span class="local">127.0.0.1:8080</span>
+                <svg class="route-arrow"><use href="#i-arrow"/></svg>
+                <span class="target">dev.local:3000</span>
+              </div>
+              <div class="rule-meta">
+                <span class="meta-item"><svg><use href="#i-activity"/></svg><strong>1.2 MB/s</strong></span>
+                <span class="meta-item"><svg><use href="#i-desktop"/></svg><strong>8</strong> <span data-i18n="connections">连接</span></span>
+                <div class="rule-meta-right">
+                  <svg class="spark" viewBox="0 0 44 14"><path d="M1 11 5 9 8 10 12 6 16 8 20 5 24 7 28 3 32 6 36 4 40 5 43 2"/></svg>
+                  <div class="rule-actions">
+                    <button class="tiny-btn" data-action="copy" title="复制监听地址" data-i18n-title="copyAddress"><svg><use href="#i-copy"/></svg></button>
+                    <button class="tiny-btn" data-action="more" title="更多操作" data-i18n-title="moreActions"><svg><use href="#i-more"/></svg></button>
+                  </div>
+                </div>
+              </div>
+            </article>
+
+            <article class="rule-card" data-rule="db" data-status="running" data-search="数据库 5433 10.0.0.12 5432 tcp">
+              <div class="rule-top">
+                <span class="protocol">TCP</span>
+                <span class="rule-name">远程数据库</span>
+                <span class="status-label"><i class="status-dot running"></i><span data-i18n="running">运行中</span></span>
+                <button class="quick-toggle" data-action="toggle" title="停止规则" data-i18n-title="stopRule"><svg><use href="#i-stop"/></svg></button>
+              </div>
+              <div class="route">
+                <span class="local">127.0.0.1:5433</span>
+                <svg class="route-arrow"><use href="#i-arrow"/></svg>
+                <span class="target">10.0.0.12:5432</span>
+              </div>
+              <div class="rule-meta">
+                <span class="meta-item"><svg><use href="#i-activity"/></svg><strong>41 KB/s</strong></span>
+                <span class="meta-item"><svg><use href="#i-desktop"/></svg><strong>3</strong> <span data-i18n="connections">连接</span></span>
+                <div class="rule-meta-right">
+                  <svg class="spark" viewBox="0 0 44 14"><path d="M1 8 5 9 8 7 12 10 16 8 20 9 24 7 28 8 32 6 36 9 40 7 43 8" style="stroke:var(--blue)"/></svg>
+                  <div class="rule-actions">
+                    <button class="tiny-btn" data-action="copy" title="复制监听地址" data-i18n-title="copyAddress"><svg><use href="#i-copy"/></svg></button>
+                    <button class="tiny-btn" data-action="more" title="更多操作" data-i18n-title="moreActions"><svg><use href="#i-more"/></svg></button>
+                  </div>
+                </div>
+              </div>
+            </article>
+
+            <article class="rule-card" data-rule="game" data-status="running" data-search="游戏服务 192.168.1.20 27015 game.internal udp">
+              <div class="rule-top">
+                <span class="protocol udp">UDP</span>
+                <span class="rule-name">游戏服务</span>
+                <span class="status-label"><i class="status-dot running"></i><span data-i18n="running">运行中</span></span>
+                <button class="quick-toggle" data-action="toggle" title="停止规则" data-i18n-title="stopRule"><svg><use href="#i-stop"/></svg></button>
+              </div>
+              <div class="route">
+                <span class="local">192.168.1.20:27015</span>
+                <svg class="route-arrow"><use href="#i-arrow"/></svg>
+                <span class="target">game.internal:27015</span>
+              </div>
+              <div class="rule-meta">
+                <span class="meta-item"><svg><use href="#i-activity"/></svg><strong>0 B/s</strong></span>
+                <span class="meta-item"><svg><use href="#i-desktop"/></svg><strong>2</strong> <span data-i18n="sessions">会话</span></span>
+                <div class="rule-meta-right">
+                  <svg class="spark" viewBox="0 0 44 14"><path d="M1 12 5 12 8 11 12 12 16 10 20 12 24 12 28 11 32 12 36 12 40 11 43 12" style="stroke:var(--violet)"/></svg>
+                  <div class="rule-actions">
+                    <button class="tiny-btn" data-action="copy" title="复制监听地址" data-i18n-title="copyAddress"><svg><use href="#i-copy"/></svg></button>
+                    <button class="tiny-btn" data-action="more" title="更多操作" data-i18n-title="moreActions"><svg><use href="#i-more"/></svg></button>
+                  </div>
+                </div>
+              </div>
+            </article>
+
+            <article class="rule-card" data-rule="api" data-status="stopped" data-search="旧版 api 9000 api.legacy 80 tcp">
+              <div class="rule-top">
+                <span class="protocol">TCP</span>
+                <span class="rule-name">旧版 API</span>
+                <span class="status-label"><i class="status-dot stopped"></i><span data-i18n="stopped">已停止</span></span>
+                <button class="quick-toggle" data-action="toggle" title="启动规则" data-i18n-title="startRule"><svg><use href="#i-play"/></svg></button>
+              </div>
+              <div class="route">
+                <span class="local">127.0.0.1:9000</span>
+                <svg class="route-arrow"><use href="#i-arrow"/></svg>
+                <span class="target">api.legacy:80</span>
+              </div>
+              <div class="rule-meta">
+                <span class="meta-item"><svg><use href="#i-activity"/></svg><strong>—</strong></span>
+                <span class="meta-item"><svg><use href="#i-desktop"/></svg><strong>0</strong> <span data-i18n="connections">连接</span></span>
+                <div class="rule-meta-right">
+                  <svg class="spark" viewBox="0 0 44 14"><path d="M1 12h42" style="stroke:var(--faint)"/></svg>
+                  <div class="rule-actions">
+                    <button class="tiny-btn" data-action="copy" title="复制监听地址" data-i18n-title="copyAddress"><svg><use href="#i-copy"/></svg></button>
+                    <button class="tiny-btn" data-action="more" title="更多操作" data-i18n-title="moreActions"><svg><use href="#i-more"/></svg></button>
+                  </div>
+                </div>
+              </div>
+            </article>
+
+            <article class="rule-card" data-rule="dns" data-status="stopped" data-search="dns 5353 1.1.1.1 53 udp">
+              <div class="rule-top">
+                <span class="protocol udp">UDP</span>
+                <span class="rule-name">DNS 测试</span>
+                <span class="status-label"><i class="status-dot stopped"></i><span data-i18n="stopped">已停止</span></span>
+                <button class="quick-toggle" data-action="toggle" title="启动规则" data-i18n-title="startRule"><svg><use href="#i-play"/></svg></button>
+              </div>
+              <div class="route">
+                <span class="local">127.0.0.1:5353</span>
+                <svg class="route-arrow"><use href="#i-arrow"/></svg>
+                <span class="target">1.1.1.1:53</span>
+              </div>
+              <div class="rule-meta">
+                <span class="meta-item"><svg><use href="#i-activity"/></svg><strong>—</strong></span>
+                <span class="meta-item"><svg><use href="#i-desktop"/></svg><strong>0</strong> <span data-i18n="connections">连接</span></span>
+                <div class="rule-meta-right">
+                  <svg class="spark" viewBox="0 0 44 14"><path d="M1 12h42" style="stroke:var(--faint)"/></svg>
+                  <div class="rule-actions">
+                    <button class="tiny-btn" data-action="copy" title="复制监听地址" data-i18n-title="copyAddress"><svg><use href="#i-copy"/></svg></button>
+                    <button class="tiny-btn" data-action="more" title="更多操作" data-i18n-title="moreActions"><svg><use href="#i-more"/></svg></button>
+                  </div>
+                </div>
+              </div>
+            </article>
+          </div>
+        </aside>
+
+        <section class="detail-panel">
+          <header class="detail-head">
+            <div class="detail-title-row">
+              <div>
+                <div class="detail-kicker">
+                  <span class="protocol">TCP</span>
+                  <span class="status-label"><i class="status-dot running"></i><span data-i18n="running">运行中</span></span>
+                  <span class="status-label" id="lastStarted" data-i18n="startedAt">· 14:32 启动</span>
+                </div>
+                <h2 class="detail-title">Web 开发</h2>
+                <p class="detail-sub" data-i18n="detailSub">本机请求正在转发到开发环境，连接状态正常。</p>
+              </div>
+              <div class="detail-actions">
+                <button class="icon-btn" title="复制监听地址" data-i18n-title="copyAddress"><svg><use href="#i-copy"/></svg></button>
+                <div class="menu-wrap">
+                  <button class="icon-btn" id="detailMoreBtn" title="更多操作" data-i18n-title="moreActions" aria-haspopup="menu" aria-expanded="false"><svg><use href="#i-more"/></svg></button>
+                  <div class="menu" id="detailMenu" role="menu">
+                    <button role="menuitem"><svg><use href="#i-restart"/></svg><span data-i18n="restart">重启</span></button>
+                    <button role="menuitem"><svg><use href="#i-copy"/></svg><span data-i18n="duplicate">复制规则</span></button>
+                    <button class="danger" role="menuitem"><svg><use href="#i-x"/></svg><span data-i18n="deleteRule">删除规则</span></button>
+                  </div>
+                </div>
+                <button class="btn danger"><svg><use href="#i-stop"/></svg><span data-i18n="stop">停止</span></button>
+              </div>
+            </div>
+          </header>
+
+          <div class="detail-scroll">
+            <div class="route-card">
+              <div class="route-card-label" data-i18n="routeLabel">CONNECTION ROUTE</div>
+              <div class="flow">
+                <div class="node">
+                  <div class="node-icon"><svg><use href="#i-desktop"/></svg></div>
+                  <div class="node-copy">
+                    <div class="node-label" data-i18n="localListener">本机监听</div>
+                    <div class="node-address">127.0.0.1<small>:8080</small></div>
+                  </div>
+                </div>
+                <div class="flow-line"><span class="pause"><svg><use href="#i-arrow"/></svg></span></div>
+                <div class="node target">
+                  <div class="node-icon"><svg><use href="#i-server"/></svg></div>
+                  <div class="node-copy">
+                    <div class="node-label" data-i18n="targetService">目标服务</div>
+                    <div class="node-address">dev.local<small>:3000</small></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="stat-grid">
+              <div class="stat-card">
+                <div class="stat-card-label" data-i18n="upload">上行速率</div>
+                <div class="stat-value">1.1 <small>MB/s</small></div>
+                <div class="stat-foot"><span class="up">↑</span> 12.4 MB <span data-i18n="total">累计</span></div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-card-label" data-i18n="download">下行速率</div>
+                <div class="stat-value">0.7 <small>MB/s</small></div>
+                <div class="stat-foot"><span class="down">↓</span> 9.8 MB <span data-i18n="total">累计</span></div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-card-label" data-i18n="activeConnections">活跃连接</div>
+                <div class="stat-value">8</div>
+                <div class="stat-foot"><span data-i18n="peak">峰值</span> 24 · <span data-i18n="avgLatency">平均延迟</span> 28 ms</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-card-label" data-i18n="lifetime">累计流量</div>
+                <div class="stat-value">1.28 <small>GB</small></div>
+                <div class="stat-foot"><span data-i18n="uptime">已运行</span> 03:41:28</div>
+              </div>
+            </div>
+
+            <div class="chart-card">
+              <div class="chart-head">
+                <div>
+                  <div class="chart-title" data-i18n="trafficTitle">实时流量</div>
+                  <div class="chart-sub">
+                    <span data-i18n="trafficSub">最近 60 秒 · 每秒采样</span>
+                    <span class="chart-now"><span data-i18n="current">当前</span> <strong>1.1 MB/s</strong> · <span data-i18n="peak">峰值</span> 1.4 MB/s</span>
+                  </div>
+                </div>
+                <div class="legend">
+                  <span><i class="up"></i><span data-i18n="uploadShort">上行</span></span>
+                  <span><i class="down"></i><span data-i18n="downloadShort">下行</span></span>
+                </div>
+              </div>
+              <div class="chart-body">
+                <div class="y-axis" aria-hidden="true">
+                  <span>1.5 MB/s</span>
+                  <span>1.0 MB/s</span>
+                  <span>0.5 MB/s</span>
+                  <span>0 B/s</span>
+                </div>
+                <div class="chart-wrap">
+                  <svg viewBox="0 0 700 158" preserveAspectRatio="none" aria-label="Traffic chart">
+                  <defs>
+                    <linearGradient id="areaUp" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stop-color="#35d6c1" stop-opacity=".20"/>
+                      <stop offset="100%" stop-color="#35d6c1" stop-opacity="0"/>
+                    </linearGradient>
+                  </defs>
+                  <line class="chart-grid-line" x1="0" y1="24" x2="700" y2="24"/>
+                  <line class="chart-grid-line" x1="0" y1="62" x2="700" y2="62"/>
+                  <line class="chart-grid-line" x1="0" y1="100" x2="700" y2="100"/>
+                  <line class="chart-grid-line" x1="0" y1="138" x2="700" y2="138"/>
+                  <text class="chart-axis" x="0" y="154">-60s</text>
+                  <text class="chart-axis" x="220" y="154">-45s</text>
+                  <text class="chart-axis" x="445" y="154">-30s</text>
+                  <text class="chart-axis" x="650" y="154">now</text>
+                  <path class="area-up" d="M0 128 C24 121,34 109,57 114 S91 98,113 102 S148 118,169 91 S203 75,226 83 S259 105,280 92 S316 61,337 69 S370 90,392 72 S425 54,447 62 S481 92,503 76 S538 49,559 58 S593 87,616 67 S650 30,673 42 S691 51,700 45 L700 145 L0 145 Z"/>
+                  <path class="line-up" d="M0 128 C24 121,34 109,57 114 S91 98,113 102 S148 118,169 91 S203 75,226 83 S259 105,280 92 S316 61,337 69 S370 90,392 72 S425 54,447 62 S481 92,503 76 S538 49,559 58 S593 87,616 67 S650 30,673 42 S691 51,700 45"/>
+                  <path class="line-down" d="M0 134 C26 132,40 124,62 127 S95 116,118 120 S153 132,174 117 S207 108,230 114 S264 129,286 119 S321 101,343 108 S376 122,398 109 S431 93,453 100 S486 117,508 105 S542 88,564 95 S597 112,620 99 S654 72,677 81 S693 89,700 85"/>
+                  <line x1="673" y1="24" x2="673" y2="138" stroke="var(--accent)" stroke-opacity=".22" stroke-dasharray="2 3"/>
+                  <circle class="chart-pulse" cx="673" cy="42" r="4"/>
+                  </svg>
+                </div>
+              </div>
+            </div>
+
+            <div class="bottom-grid">
+              <div class="mini-panel">
+                <div class="mini-head">
+                  <div class="mini-title" data-i18n="recentEvents">最近事件</div>
+                  <button class="link-btn" data-i18n="viewAll">查看全部日志 →</button>
+                </div>
+                <div class="log-list">
+                  <div class="log-row">
+                    <span class="log-time">14:36:08</span>
+                    <span class="log-level">INFO</span>
+                    <span class="log-msg"><code>127.0.0.1:52144</code> <span data-i18n="logConnected">已连接至目标服务</span></span>
+                  </div>
+                  <div class="log-row">
+                    <span class="log-time">14:35:42</span>
+                    <span class="log-level">INFO</span>
+                    <span class="log-msg"><span data-i18n="logClosed">客户端连接正常关闭</span> · 3.2 MB</span>
+                  </div>
+                  <div class="log-row">
+                    <span class="log-time">14:35:17</span>
+                    <span class="log-level warn">WARN</span>
+                    <span class="log-msg"><span data-i18n="logRetry">目标响应缓慢，已自动继续监听</span></span>
+                  </div>
+                  <div class="log-row">
+                    <span class="log-time">14:32:00</span>
+                    <span class="log-level">INFO</span>
+                    <span class="log-msg"><span data-i18n="logStarted">规则已启动，监听</span> <code>127.0.0.1:8080</code></span>
+                  </div>
+                  <div class="log-row">
+                    <span class="log-time">14:29:51</span>
+                    <span class="log-level">INFO</span>
+                    <span class="log-msg"><span data-i18n="logClientClosed">客户端连接关闭</span> · 2.4 MB</span>
+                  </div>
+                  <div class="log-row">
+                    <span class="log-time">14:28:12</span>
+                    <span class="log-level">INFO</span>
+                    <span class="log-msg"><span data-i18n="logHealthCheck">目标健康检查通过</span> · 28 ms</span>
+                  </div>
+                  <div class="log-row">
+                    <span class="log-time">14:24:09</span>
+                    <span class="log-level">INFO</span>
+                    <span class="log-msg"><span data-i18n="logListenerHealthy">监听状态正常</span> · 0 errors</span>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </section>
+      </section>
+    </main>
+  </div>
+
+  <div class="modal-backdrop" id="newRuleModal">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <div class="modal-head">
+        <div>
+          <h2 id="modalTitle" data-i18n="newRuleTitle">新建转发规则</h2>
+          <p data-i18n="newRuleSub">选择本机监听地址，并填写需要访问的目标服务。</p>
+        </div>
+        <button class="icon-btn" id="closeModalBtn" aria-label="Close"><svg><use href="#i-x"/></svg></button>
+      </div>
+      <div class="modal-body">
+        <div class="form-grid">
+          <div class="field wide">
+            <label data-i18n="ruleName">规则名称</label>
+            <input value="本地 API" data-i18n-value="ruleNamePlaceholder">
+          </div>
+          <div class="field">
+            <label data-i18n="protocol">协议</label>
+            <div class="protocol-select">
+              <button class="active">TCP</button>
+              <button>UDP</button>
+            </div>
+          </div>
+          <div class="field" id="listenPortField">
+            <label data-i18n="listenPort">监听端口</label>
+            <input id="listenPortInput" value="8081" inputmode="numeric">
+            <div class="field-error" data-i18n="portConflictError">端口 8080 已被“Web 开发”占用</div>
+          </div>
+          <div class="field">
+            <label data-i18n="listenAddress">监听地址</label>
+            <select>
+              <option>127.0.0.1</option>
+              <option>192.168.1.20</option>
+              <option>::1</option>
+            </select>
+          </div>
+          <div class="field">
+            <label data-i18n="targetHost">目标主机</label>
+            <input value="localhost">
+          </div>
+          <div class="field">
+            <label data-i18n="targetPort">目标端口</label>
+            <input value="3000" inputmode="numeric">
+          </div>
+          <div class="field">
+            <label data-i18n="enableOnCreate">创建后立即启用</label>
+            <div class="toggle-row">
+              <span data-i18n="enableOnCreateHint">保存后启动转发</span>
+              <button class="toggle on" id="createEnabled" aria-label="Enable after creation"></button>
+            </div>
+          </div>
+          <div class="field wide">
+            <div class="modal-note">
+              <svg><use href="#i-info"/></svg>
+              <span data-i18n="safetyNote">为降低暴露风险，监听地址仅允许回环或本机具体网卡地址。创建后可通过列表开关启动规则。</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-foot">
+        <button class="btn" id="cancelModalBtn" data-i18n="cancel">取消</button>
+        <button class="btn primary" data-i18n="createRule">创建规则</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const root = document.documentElement;
+    const params = new URLSearchParams(location.search);
+    const initialTheme = params.get("theme");
+    if (initialTheme === "light" || initialTheme === "dark") {
+      root.dataset.theme = initialTheme;
+    }
+
+    const translations = {
+      zh: {
+        eyebrow: "LOCAL PORT CONTROL",
+        title: "端口转发",
+        subtitle: "管理本机监听端口与目标服务之间的连接",
+        startAll: "全部启动",
+        newRule: "新建转发",
+        rulesTitle: "转发规则",
+        searchPlaceholder: "搜索名称、端口或目标…",
+        filterAll: "全部 5",
+        filterRunning: "运行中 3",
+        filterStopped: "已停止 2",
+        running: "运行中",
+        stopped: "已停止",
+        connections: "连接",
+        sessions: "会话",
+        restart: "重启",
+        stop: "停止",
+        startRule: "启动规则",
+        stopRule: "停止规则",
+        duplicate: "复制规则",
+        deleteRule: "删除规则",
+        copyAddress: "复制监听地址",
+        moreActions: "更多操作",
+        detailSub: "本机请求正在转发到开发环境，连接状态正常。",
+        startedAt: "· 14:32 启动",
+        routeLabel: "CONNECTION ROUTE",
+        localListener: "本机监听",
+        targetService: "目标服务",
+        upload: "上行速率",
+        download: "下行速率",
+        activeConnections: "活跃连接",
+        lifetime: "累计流量",
+        total: "累计",
+        peak: "峰值",
+        avgLatency: "平均延迟",
+        current: "当前",
+        uptime: "已运行",
+        trafficTitle: "实时流量",
+        trafficSub: "最近 60 秒 · 每秒采样",
+        uploadShort: "上行",
+        downloadShort: "下行",
+        recentEvents: "最近事件",
+        viewAll: "查看全部日志 →",
+        logConnected: "已连接至目标服务",
+        logClosed: "客户端连接正常关闭",
+        logRetry: "目标响应缓慢，已自动继续监听",
+        logStarted: "规则已启动，监听",
+        logClientClosed: "客户端连接关闭",
+        logHealthCheck: "目标健康检查通过",
+        logListenerHealthy: "监听状态正常",
+        newRuleTitle: "新建转发规则",
+        newRuleSub: "选择本机监听地址，并填写需要访问的目标服务。",
+        ruleName: "规则名称",
+        ruleNamePlaceholder: "本地 API",
+        listenPort: "监听端口",
+        listenAddress: "监听地址",
+        targetHost: "目标主机",
+        targetPort: "目标端口",
+        enableOnCreate: "创建后立即启用",
+        enableOnCreateHint: "保存后启动转发",
+        portConflictError: "端口 8080 已被“Web 开发”占用",
+        safetyNote: "为降低暴露风险，监听地址仅允许回环或本机具体网卡地址。创建后可通过列表开关启动规则。",
+        cancel: "取消",
+        createRule: "创建规则",
+      },
+      en: {
+        eyebrow: "LOCAL PORT CONTROL",
+        title: "Port forwarding",
+        subtitle: "Manage connections between local listeners and target services",
+        startAll: "Start all",
+        newRule: "New rule",
+        rulesTitle: "Forwarding rules",
+        searchPlaceholder: "Search name, port, or target…",
+        filterAll: "All 5",
+        filterRunning: "Running 3",
+        filterStopped: "Stopped 2",
+        running: "Running",
+        stopped: "Stopped",
+        connections: "conn.",
+        sessions: "sessions",
+        restart: "Restart",
+        stop: "Stop",
+        startRule: "Start rule",
+        stopRule: "Stop rule",
+        duplicate: "Duplicate rule",
+        deleteRule: "Delete rule",
+        copyAddress: "Copy listen address",
+        moreActions: "More actions",
+        detailSub: "Local traffic is being forwarded to the development environment.",
+        startedAt: "· started 14:32",
+        routeLabel: "CONNECTION ROUTE",
+        localListener: "Local listener",
+        targetService: "Target service",
+        upload: "Upload rate",
+        download: "Download rate",
+        activeConnections: "Active connections",
+        lifetime: "Lifetime traffic",
+        total: "total",
+        peak: "peak",
+        avgLatency: "avg latency",
+        current: "Current",
+        uptime: "uptime",
+        trafficTitle: "Live traffic",
+        trafficSub: "Last 60 seconds · 1s sample",
+        uploadShort: "Upload",
+        downloadShort: "Download",
+        recentEvents: "Recent events",
+        viewAll: "View all logs →",
+        logConnected: "Connected to target service",
+        logClosed: "Client connection closed cleanly",
+        logRetry: "Target response slow, listener remains active",
+        logStarted: "Rule started, listening on",
+        logClientClosed: "Client connection closed",
+        logHealthCheck: "Target health check passed",
+        logListenerHealthy: "Listener healthy",
+        newRuleTitle: "Create a forwarding rule",
+        newRuleSub: "Choose a local listener and enter the target service to reach.",
+        ruleName: "Rule name",
+        ruleNamePlaceholder: "Local API",
+        listenPort: "Listen port",
+        listenAddress: "Listen address",
+        targetHost: "Target host",
+        targetPort: "Target port",
+        enableOnCreate: "Enable after creation",
+        enableOnCreateHint: "Start after saving",
+        portConflictError: "Port 8080 is already used by “Web Dev”",
+        safetyNote: "Listeners are limited to loopback or a specific local interface. Start the rule from the list after creating it.",
+        cancel: "Cancel",
+        createRule: "Create rule",
+      }
+    };
+
+    let currentLang = params.get("lang") === "en" ? "en" : "zh";
+
+    function applyLanguage(lang) {
+      currentLang = lang;
+      const dict = translations[lang];
+      document.documentElement.lang = lang === "zh" ? "zh-CN" : "en";
+      document.querySelectorAll("[data-i18n]").forEach((node) => {
+        const key = node.getAttribute("data-i18n");
+        if (dict[key]) node.textContent = dict[key];
+      });
+      document.querySelectorAll("[data-i18n-placeholder]").forEach((node) => {
+        const key = node.getAttribute("data-i18n-placeholder");
+        if (dict[key]) node.placeholder = dict[key];
+      });
+      document.querySelectorAll("[data-i18n-value]").forEach((node) => {
+        const key = node.getAttribute("data-i18n-value");
+        if (dict[key]) node.value = dict[key];
+      });
+      document.querySelectorAll("[data-i18n-title]").forEach((node) => {
+        const key = node.getAttribute("data-i18n-title");
+        if (dict[key]) node.title = dict[key];
+      });
+      document.querySelectorAll("[data-lang]").forEach((node) => {
+        node.classList.toggle("active", node.dataset.lang === lang);
+      });
+      updateFilterCounts();
+    }
+
+    applyLanguage(currentLang);
+
+    const validationMode = params.get("validation") === "1";
+    if (params.get("modal") === "1" || validationMode) {
+      document.getElementById("newRuleModal").classList.add("open");
+    }
+    if (validationMode) {
+      document.getElementById("listenPortField").classList.add("has-error");
+      document.getElementById("listenPortInput").value = "8080";
+    }
+
+    function syncThemeIcon() {
+      const icon = document.getElementById("themeIcon");
+      icon.innerHTML = root.dataset.theme === "dark"
+        ? '<use href="#i-sun"/>'
+        : '<use href="#i-moon"/>';
+    }
+    syncThemeIcon();
+
+    document.getElementById("themeBtn").addEventListener("click", () => {
+      root.dataset.theme = root.dataset.theme === "dark" ? "light" : "dark";
+      syncThemeIcon();
+    });
+
+    document.querySelectorAll("[data-lang]").forEach((button) => {
+      button.addEventListener("click", () => applyLanguage(button.dataset.lang));
+    });
+
+    document.querySelectorAll(".rule-card").forEach((card) => {
+      card.addEventListener("click", () => {
+        document.querySelectorAll(".rule-card").forEach((node) => node.classList.remove("selected"));
+        card.classList.add("selected");
+      });
+    });
+
+    document.querySelectorAll('[data-action="toggle"]').forEach((button) => {
+      button.addEventListener("click", (event) => {
+        event.stopPropagation();
+        const card = button.closest(".rule-card");
+        const nextStatus = card.dataset.status === "running" ? "stopped" : "running";
+        card.dataset.status = nextStatus;
+        card.querySelector(".status-dot").className = `status-dot ${nextStatus}`;
+        card.querySelector(".status-label [data-i18n]").setAttribute("data-i18n", nextStatus);
+        button.innerHTML = `<svg><use href="#i-${nextStatus === "running" ? "stop" : "play"}"/></svg>`;
+        button.setAttribute("data-i18n-title", nextStatus === "running" ? "stopRule" : "startRule");
+        applyLanguage(currentLang);
+        updateFilterCounts();
+        filterRules();
+      });
+    });
+
+    document.querySelectorAll('[data-action="copy"]').forEach((button) => {
+      button.addEventListener("click", (event) => {
+        event.stopPropagation();
+        const address = button.closest(".rule-card").querySelector(".local").textContent;
+        if (navigator.clipboard) navigator.clipboard.writeText(address).catch(() => {});
+      });
+    });
+
+    document.querySelectorAll('[data-action="more"]').forEach((button) => {
+      button.addEventListener("click", (event) => {
+        event.stopPropagation();
+        button.closest(".rule-card").click();
+      });
+    });
+
+    const filters = document.querySelectorAll(".filter");
+    const searchInput = document.getElementById("searchInput");
+    let activeFilter = "all";
+
+    function updateFilterCounts() {
+      const cards = Array.from(document.querySelectorAll(".rule-card"));
+      const total = cards.length;
+      const running = cards.filter((card) => card.dataset.status === "running").length;
+      const stopped = total - running;
+      const zh = currentLang === "zh";
+      document.getElementById("ruleCount").textContent = zh ? `${total} 条规则` : `${total} RULES`;
+      document.querySelector('[data-filter="all"]').textContent = zh ? `全部 ${total}` : `All ${total}`;
+      document.querySelector('[data-filter="running"]').textContent = zh ? `运行中 ${running}` : `Running ${running}`;
+      document.querySelector('[data-filter="stopped"]').textContent = zh ? `已停止 ${stopped}` : `Stopped ${stopped}`;
+    }
+
+    function filterRules() {
+      const query = searchInput.value.trim().toLowerCase();
+      document.querySelectorAll(".rule-card").forEach((card) => {
+        const statusOk = activeFilter === "all" || card.dataset.status === activeFilter;
+        const searchOk = !query || card.dataset.search.includes(query);
+        card.style.display = statusOk && searchOk ? "" : "none";
+      });
+    }
+
+    filters.forEach((button) => {
+      button.addEventListener("click", () => {
+        filters.forEach((node) => node.classList.remove("active"));
+        button.classList.add("active");
+        activeFilter = button.dataset.filter;
+        filterRules();
+      });
+    });
+    searchInput.addEventListener("input", filterRules);
+
+    const modal = document.getElementById("newRuleModal");
+    function openModal() { modal.classList.add("open"); }
+    function closeModal() { modal.classList.remove("open"); }
+    document.getElementById("newRuleBtn").addEventListener("click", openModal);
+    document.getElementById("closeModalBtn").addEventListener("click", closeModal);
+    document.getElementById("cancelModalBtn").addEventListener("click", closeModal);
+    modal.addEventListener("click", (event) => {
+      if (event.target === modal) closeModal();
+    });
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") closeModal();
+    });
+
+    document.querySelectorAll(".protocol-select button").forEach((button) => {
+      button.addEventListener("click", () => {
+        document.querySelectorAll(".protocol-select button").forEach((node) => node.classList.remove("active"));
+        button.classList.add("active");
+      });
+    });
+
+    document.getElementById("createEnabled").addEventListener("click", (event) => {
+      event.currentTarget.classList.toggle("on");
+    });
+
+    const detailMoreBtn = document.getElementById("detailMoreBtn");
+    const detailMenu = document.getElementById("detailMenu");
+    function closeDetailMenu() {
+      detailMenu.classList.remove("open");
+      detailMoreBtn.setAttribute("aria-expanded", "false");
+    }
+    detailMoreBtn.addEventListener("click", (event) => {
+      event.stopPropagation();
+      const open = detailMenu.classList.toggle("open");
+      detailMoreBtn.setAttribute("aria-expanded", String(open));
+    });
+    detailMenu.querySelectorAll("button").forEach((button) => {
+      button.addEventListener("click", closeDetailMenu);
+    });
+    if (params.get("menu") === "1") {
+      detailMenu.classList.add("open");
+      detailMoreBtn.setAttribute("aria-expanded", "true");
+    }
+    document.addEventListener("click", (event) => {
+      if (!detailMenu.contains(event.target) && !detailMoreBtn.contains(event.target)) closeDetailMenu();
+    });
+  </script>
+</body>
+</html>
